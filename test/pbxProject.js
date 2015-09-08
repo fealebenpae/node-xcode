@@ -169,6 +169,9 @@ exports['updateBuildProperty function'] = {
             myProj.updateBuildProperty('TARGETED_DEVICE_FAMILY', '"arm"');
             var newContents = myProj.writeSync();
             test.ok(newContents.match(/TARGETED_DEVICE_FAMILY\s*=\s*"arm"/));
+            myProj.updateBuildProperty('OTHER_LDFLAGS', ['T','E','S','T']);
+            newContents = myProj.writeSync();
+            test.ok(newContents.match(/OTHER_LDFLAGS\s*=\s*\(\s*T,\s*E,\s*S,\s*T,\s*\)/))
             test.done();
         });
     }
@@ -181,6 +184,28 @@ exports['productName field'] = {
 
         test.equal(newProj.productName, 'KitchenSinktablet');
         test.done();
+    }
+}
+
+exports['addPluginFile function'] = {
+    'should strip the Plugin path prefix': function (test) {
+        var myProj = new pbx('test/parser/projects/full.pbxproj');
+
+        myProj.parse(function (err, hash) {
+            test.equal(myProj.addPluginFile('Plugins/testMac.m').path, 'testMac.m');
+            test.equal(myProj.addPluginFile('Plugins\\testWin.m').path, 'testWin.m');
+            test.done();
+        });
+    },
+    'should add files to the .pbxproj file using the / path seperator': function (test) {
+        var myProj = new pbx('test/parser/projects/full.pbxproj');
+
+        myProj.parse(function (err, hash) {
+            var file = myProj.addPluginFile('myPlugin\\newFile.m');
+
+            test.equal(myProj.pbxFileReferenceSection()[file.fileRef].path, '"myPlugin/newFile.m"');
+            test.done();
+        });
     }
 }
 
