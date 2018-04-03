@@ -43,6 +43,13 @@ exports['lastType'] = {
         test.done();
     },
 
+    'should detect that a .framework/.a path means archive.ar': function (test) {
+        var sourceFile = new pbxFile('MessageUI.framework/libGoogleAnalytics.a');
+
+        test.equal('archive.ar', sourceFile.lastType);
+        test.done();
+    },
+    
     'should detect that a .a path means archive.ar': function (test) {
         var sourceFile = new pbxFile('libGoogleAnalytics.a');
 
@@ -195,9 +202,9 @@ exports['settings'] = {
 
     'should be {COMPILER_FLAGS:"blah"} if compiler flags specified': function (test) {
         var sourceFile = new pbxFile('Plugins/BarcodeScanner.m',
-            { compilerFlags: "-fno-objc-arc" });
+            { compilerFlags: "-std=c++11 -fno-objc-arc" });
 
-        test.deepEqual({COMPILER_FLAGS:"-fno-objc-arc"}, sourceFile.settings);
+        test.deepEqual({COMPILER_FLAGS:'"-std=c++11 -fno-objc-arc"'}, sourceFile.settings);
         test.done();
     }
 }
